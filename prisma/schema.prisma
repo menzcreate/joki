@@ -1,8 +1,6 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
+  seed = "node prisma/seed.js"
 }
 
 datasource db {
@@ -17,19 +15,39 @@ enum JenisKelamin {
 }
 
 model User {
-  id_user            Int       @id @default(autoincrement())
+  id_user            Int                    @id @default(autoincrement())
   username           String    
-  password           String    @db.VarChar(50)
-  email              String    @db.VarChar(50)
-  nama_lengkap       String    @db.VarChar(50)
-  alamat             String    @db.VarChar(255)
+  password           String                 @db.VarChar(50)
+  email              String                 @db.VarChar(50)
+  nama_lengkap       String                 @db.VarChar(50)
+  alamat             String                 @db.VarChar(255)
   no_telp            Int
   jenis_kelamin      JenisKelamin  
-  tgl_lahir          DateTime  @db.Date
-  tgl_gabung         DateTime  @default(now()) @db.Date
-  id_user_education  Int
-  id_job_history     Int
+  tgl_lahir          DateTime               @db.Date
+  tgl_gabung         DateTime               @default(now()) @db.Date
+  id_user_education  Int?                   @unique
+  id_job_history     Int?                   @unique
+  educationHistory   UserEducationHistory?  @relation(fields: [id_user_education], references: [id])
+  jobHistory         UserJobHistory?        @relation(fields: [id_job_history], references: [id])
 }
 
+model UserEducationHistory {
+  id                 Int   @id @default(autoincrement())
+  pendidikan_terakhir  String    @db.VarChar(50)
+  tahun_mulai          DateTime  @db.Date
+  tahun_selesai        DateTime  @db.Date
+  nilai                Float
+  organisasi           String    @db.VarChar(50)
+  User                 User?
+}
 
-
+model UserJobHistory {
+  id                  Int   @id @default(autoincrement())
+  pekerjaan_terdahulu String    @db.VarChar(50)
+  perusahaan_terdahulu String    @db.VarChar(50)
+  tahun_mulai         DateTime  @db.Date
+  tahun_selesai       DateTime  @db.Date
+  pengalaman_kerja    String    @db.VarChar(255)
+  keahlian            String    @db.VarChar(50)
+  User                User?
+}
